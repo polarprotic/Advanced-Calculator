@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfect Grid Calculator</title>
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #393d4e, #41265c);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.calculator {
+    background: #1e1e2f;
+    border-radius: 20px;
+    padding: 20px;
+    width: 360px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+#display {
+    display: block;
+    margin: auto auto;
+    width: 90%;
+    height: 60px;
+    border: none;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(5px);
+    color: #fff;
+    font-size: 2rem;
+    text-align: right;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-shadow: inset 0 -3px 6px rgba(0,0,0,0.5);
+}
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+button {
+    padding: 18px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.1s;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+/* Button Colors */
+.number { background: linear-gradient(145deg, #505385, #3f416e); }
+.operator { background: linear-gradient(145deg, #ff9a76, #ff6a3d); }
+.equals { background: linear-gradient(145deg, #426d5f, #404f4b); }
+.clear { background: linear-gradient(145deg, #553336, #4b4133); }
+.trig { background: linear-gradient(145deg, #90867b, #928e7b); }
+
+@media(max-width: 400px){
+    .calculator { width: 95%; }
+    button { padding: 15px; font-size: 1rem; }
+    #display { font-size: 1.8rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="calculator">
+    <input type="text" id="display" placeholder="0" disabled>
+    <div class="buttons">
+        <!-- Row 1: Trigonometry -->
+        <button class="trig" onclick="applyTrig('sin')">sin</button>
+        <button class="trig" onclick="applyTrig('cos')">cos</button>
+        <button class="trig" onclick="applyTrig('tan')">tan</button>
+        <button class="operator" onclick="appendOperator('(')">(</button>
+        <button class="operator" onclick="appendOperator(')')">)</button>
+
+        <!-- Row 2 -->
+        <button class="number" onclick="appendNumber('7')">7</button>
+        <button class="number" onclick="appendNumber('8')">8</button>
+        <button class="number" onclick="appendNumber('9')">9</button>
+        <button class="operator" onclick="appendOperator('/')">÷</button>
+        <button class="clear" onclick="clearDisplay()">C</button>
+
+        <!-- Row 3 -->
+        <button class="number" onclick="appendNumber('4')">4</button>
+        <button class="number" onclick="appendNumber('5')">5</button>
+        <button class="number" onclick="appendNumber('6')">6</button>
+        <button class="operator" onclick="appendOperator('*')">×</button>
+        <button class="operator" onclick="appendOperator('^')">^</button>
+
+        <!-- Row 4 -->
+        <button class="number" onclick="appendNumber('1')">1</button>
+        <button class="number" onclick="appendNumber('2')">2</button>
+        <button class="number" onclick="appendNumber('3')">3</button>
+        <button class="operator" onclick="appendOperator('-')">−</button>
+        <button class="equals" onclick="calculate()">=</button>
+
+        <!-- Row 5 -->
+        <button class="number" onclick="appendNumber('0')">0</button>
+        <button class="number" onclick="appendNumber('.')">.</button>
+        <button class="operator" onclick="appendOperator('+')">+</button>
+        <button class="operator" onclick="appendOperator('%')">%</button>
+        <button class="operator" onclick="appendOperator('!')">!</button>
+    </div>
+</div>
+
+<script>
+let display = document.getElementById('display');
+
+function appendNumber(num) {
+    if(display.value === "0") display.value = "";
+    display.value += num;
+}
+
+function appendOperator(op) {
+    if(display.value === "" && op !== '(') return;
+    display.value += op;
+}
+
+function clearDisplay() {
+    display.value = "";
+}
+
+function applyTrig(func) {
+    try {
+        let value = parseFloat(display.value);
+        if(isNaN(value)) return;
+        let rad = value * Math.PI / 180;
+        let result;
+        if(func==='sin') result = Math.sin(rad);
+        if(func==='cos') result = Math.cos(rad);
+        if(func==='tan') result = Math.tan(rad);
+        display.value = parseFloat(result.toFixed(6));
+    } catch { display.value="Error"; }
+}
+
+function calculate() {
+    try {
+        let exp = display.value.replace(/÷/g,'/').replace(/×/g,'*').replace(/\^/g,'**');
+        display.value = Function(`"use strict"; return (${exp})`)();
+    } catch { display.value="Error"; }
+}
+</script>
+
+</body>
+</html>
